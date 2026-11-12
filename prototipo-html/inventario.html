@@ -36,6 +36,11 @@
           class="hidden text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-xl p-3">
         </p>
 
+        <!-- Aviso de estoque crítico -->
+        <p id="avisoCritico"
+          class="hidden text-xs font-semibold text-rose-600 bg-rose-50 border border-rose-100 rounded-xl p-3">
+        </p>
+
 
         <div id="conteudoInventarioPrincipal" class="flex gap-3">
           <input id="busca" type="search" placeholder="Buscar por nome do material..."
@@ -142,6 +147,74 @@
             </tbody>
           </table>
         </div>
+
+        <!-- Histórico de movimentações -->
+        <div class="flex flex-col gap-3">
+          <div class="flex flex-col gap-0.5">
+            <h3 class="text-sm font-bold text-slate-900">Histórico de movimentações</h3>
+            <p class="text-xs text-slate-500">Últimas entradas e saídas de material.</p>
+          </div>
+          <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+            <table class="w-full text-left text-sm border-collapse">
+              <thead class="text-[11px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100">
+                <tr>
+                  <th class="py-4 px-6">Data</th>
+                  <th class="py-4 px-6">Material</th>
+                  <th class="py-4 px-6 text-center">Tipo</th>
+                  <th class="py-4 px-6 text-center">Quantidade</th>
+                  <th class="py-4 px-6 text-right">Projeto / Origem</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr class="hover:bg-slate-50/50">
+                  <td class="py-4 px-6 text-slate-400">10/11/2026</td>
+                  <td class="py-4 px-6 font-semibold text-slate-800">PLA Branco 1.75mm</td>
+                  <td class="py-4 px-6 text-center">
+                    <span class="inline-block px-3 py-1 text-xs font-semibold text-blue-600 bg-blue-50 rounded-full">Saída</span>
+                  </td>
+                  <td class="py-4 px-6 text-center font-bold text-slate-800">380 g</td>
+                  <td class="py-4 px-6 text-right text-slate-400">Projeto Braço Robótico</td>
+                </tr>
+                <tr class="hover:bg-slate-50/50">
+                  <td class="py-4 px-6 text-slate-400">09/11/2026</td>
+                  <td class="py-4 px-6 font-semibold text-slate-800">Parafuso M3x10</td>
+                  <td class="py-4 px-6 text-center">
+                    <span class="inline-block px-3 py-1 text-xs font-semibold text-blue-600 bg-blue-50 rounded-full">Saída</span>
+                  </td>
+                  <td class="py-4 px-6 text-center font-bold text-slate-800">50 un.</td>
+                  <td class="py-4 px-6 text-right text-slate-400">Projeto Caixa Organizadora</td>
+                </tr>
+                <tr class="hover:bg-slate-50/50">
+                  <td class="py-4 px-6 text-slate-400">06/11/2026</td>
+                  <td class="py-4 px-6 font-semibold text-slate-800">Acrílico Transparente 3mm</td>
+                  <td class="py-4 px-6 text-center">
+                    <span class="inline-block px-3 py-1 text-xs font-semibold text-emerald-600 bg-emerald-50 rounded-full">Entrada</span>
+                  </td>
+                  <td class="py-4 px-6 text-center font-bold text-slate-800">10 un.</td>
+                  <td class="py-4 px-6 text-right text-slate-400">Reposição do almoxarifado</td>
+                </tr>
+                <tr class="hover:bg-slate-50/50">
+                  <td class="py-4 px-6 text-slate-400">05/11/2026</td>
+                  <td class="py-4 px-6 font-semibold text-slate-800">Placa MDF 3mm</td>
+                  <td class="py-4 px-6 text-center">
+                    <span class="inline-block px-3 py-1 text-xs font-semibold text-blue-600 bg-blue-50 rounded-full">Saída</span>
+                  </td>
+                  <td class="py-4 px-6 text-center font-bold text-slate-800">4 un.</td>
+                  <td class="py-4 px-6 text-right text-slate-400">Projeto Luminária</td>
+                </tr>
+                <tr class="hover:bg-slate-50/50">
+                  <td class="py-4 px-6 text-slate-400">03/11/2026</td>
+                  <td class="py-4 px-6 font-semibold text-slate-800">PLA Preto 1.75mm</td>
+                  <td class="py-4 px-6 text-center">
+                    <span class="inline-block px-3 py-1 text-xs font-semibold text-emerald-600 bg-emerald-50 rounded-full">Entrada</span>
+                  </td>
+                  <td class="py-4 px-6 text-center font-bold text-slate-800">1000 g</td>
+                  <td class="py-4 px-6 text-right text-slate-400">Reposição do almoxarifado</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   </main>
@@ -232,6 +305,21 @@
       }
     }
 
+    // avisa quais materiais estão com status Crítico
+    function avisarCriticos() {
+      var linhas = document.querySelectorAll('.linha');
+      var nomes = [];
+      for (var i = 0; i < linhas.length; i++) {
+        if (linhas[i].textContent.indexOf('Crítico') !== -1) {
+          nomes.push(linhas[i].querySelector('span').textContent);
+        }
+      }
+      if (nomes.length > 0) {
+        document.getElementById('avisoCritico').textContent = 'Estoque crítico (' + nomes.length + '): ' + nomes.join(', ') + '.';
+        document.getElementById('avisoCritico').classList.remove('hidden');
+      }
+    }
+
     // registra a solicitação (ainda sem backend: só mostra o aviso na tela)
     document.getElementById('formMaterial').addEventListener('submit', function (e) {
       e.preventDefault();
@@ -249,6 +337,8 @@
 
     busca.addEventListener('input', filtrar);
     selecao.addEventListener('change', filtrar);
+
+    avisarCriticos();
   </script>
 </body>
 
