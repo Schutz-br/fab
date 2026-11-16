@@ -1,107 +1,85 @@
-import { BrowserRouter, Navigate, Outlet, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
-import { PerfilProvider, usePerfil } from './PerfilContext.jsx'
-import Sidebar from './components/Sidebar.jsx'
+import {
+  BrowserRouter,
+  Navigate,
+  Outlet,
+  Route,
+  Routes,
+  useLocation
+} from 'react-router-dom'
 
-// Página -> perfis que podem abrir (igual ao RESTRITO do menu.js)
+import { PerfilProvider, usePerfil } from './perfilcontext.jsx'
+import Sidebar from './sidebar.jsx'
+import Login from './pages/login.jsx'
+import Cadastro from './pages/cadastro.jsx'
+
 const RESTRITO = {
   '/pedidos': ['instrutor', 'administrador'],
   '/usuarios': ['administrador'],
   '/dashboard-aluno': ['aluno'],
   '/dashboard-instrutor': ['instrutor'],
-  '/dashboard-administrador': ['administrador'],
+  '/dashboard-administrador': ['administrador']
 }
 
-// Rota protegida: sem perfil vai para o login, sem permissão vai para o 403
 function RotaProtegida() {
   const { perfil } = usePerfil()
-  const local = useLocation()
+  const location = useLocation()
 
-  if (!perfil) return <Navigate to="/login" replace />
-
-  const permitidos = RESTRITO[local.pathname]
-  if (permitidos && !permitidos.includes(perfil)) return <Navigate to="/403" replace />
-
-  // Esqueleto das páginas internas: menu + tela da direita
-  return (
-    <div id="geral" className="flex h-screen overflow-hidden bg-slate-50 text-slate-800 antialiased font-sans">
-      <Sidebar />
-      <Outlet />
-    </div>
-  )
-}
-
-// Provisório: tela vazia só para testar as rotas (troca pelas telas reais)
-function EmBreve({ titulo }) {
-  return (
-    <div id="painelDireita" className="flex-1 h-screen overflow-y-auto p-8">
-      <h2 className="text-2xl font-bold text-slate-900">{titulo}</h2>
-      <p className="text-sm text-slate-600">Tela ainda não convertida.</p>
-    </div>
-  )
-}
-
-// Provisório: login com 3 botões para testar os perfis (troca pela tela de login)
-function LoginTeste() {
-  const { entrar } = usePerfil()
-  const ir = useNavigate()
-
-  function escolher(perfil) {
-    entrar(perfil)
-    ir('/dashboard-' + perfil)
+  if (!perfil) {
+    return <Navigate to="/login" replace />
   }
 
-  return (
-    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center gap-4 font-sans">
-      <h2 className="text-2xl font-bold text-slate-900">Login (teste)</h2>
-      <div className="flex gap-3">
-        <button onClick={() => escolher('aluno')} className="px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-bold cursor-pointer">Aluno</button>
-        <button onClick={() => escolher('instrutor')} className="px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-bold cursor-pointer">Instrutor</button>
-        <button onClick={() => escolher('administrador')} className="px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-bold cursor-pointer">Administrador</button>
-      </div>
-    </div>
-  )
+  const permitidos = RESTRITO[location.pathname]
+
+  if (permitidos && !permitidos.includes(perfil)) {
+    return <Navigate to="/403" replace />
+  }
+
+  return <Outlet />
 }
 
-// Provisório: página de acesso negado
-function Acesso403() {
+function Layout() {
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center gap-2 font-sans">
-      <h2 className="text-2xl font-bold text-slate-900">403 - Acesso negado</h2>
-      <p className="text-sm text-slate-600">Seu perfil não tem permissão para abrir esta página.</p>
+    <div className="flex min-h-screen bg-slate-950">
+      <Sidebar />
+
+      <main className="flex-1">
+        <Outlet />
+      </main>
     </div>
   )
 }
 
 function App() {
   return (
-    <BrowserRouter>
-      <PerfilProvider>
+    <PerfilProvider>
+      <BrowserRouter>
         <Routes>
 
-          {/* Páginas abertas */}
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="/login" element={<LoginTeste />} />
-          <Route path="/403" element={<Acesso403 />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/cadastro" element={<Cadastro />} />
+          <Route path="/403" element={<div>403 - Acesso negado</div>} />
+          <Route path="/recuperacao-senha" element={<div>Recuperação de senha</div>} />
 
-          {/* Páginas internas (precisam de login) */}
           <Route element={<RotaProtegida />}>
-            <Route path="/dashboard-aluno" element={<EmBreve titulo="Dashboard do aluno" />} />
-            <Route path="/dashboard-instrutor" element={<EmBreve titulo="Dashboard do instrutor" />} />
-            <Route path="/dashboard-administrador" element={<EmBreve titulo="Dashboard do administrador" />} />
-            <Route path="/inventario" element={<EmBreve titulo="Inventário" />} />
-            <Route path="/equipamentos" element={<EmBreve titulo="Equipamentos" />} />
-            <Route path="/reservas" element={<EmBreve titulo="Reservas" />} />
-            <Route path="/pedidos" element={<EmBreve titulo="Pedidos para análise" />} />
-            <Route path="/notificacoes" element={<EmBreve titulo="Notificações" />} />
-            <Route path="/usuarios" element={<EmBreve titulo="Usuários" />} />
+            <Route element={<Layout />}>
+              <Route path="/dashboard-aluno" element={<div>Dashboard Aluno</div>} />
+              <Route path="/dashboard-instrutor" element={<div>Dashboard Instrutor</div>} />
+              <Route path="/dashboard-administrador" element={<div>Dashboard Administrador</div>} />
+
+              <Route path="/inventario" element={<div>Inventário</div>} />
+              <Route path="/equipamentos" element={<div>Equipamentos</div>} />
+              <Route path="/reservas" element={<div>Reservas</div>} />
+              <Route path="/pedidos" element={<div>Pedidos</div>} />
+              <Route path="/notificacoes" element={<div>Notificações</div>} />
+              <Route path="/usuarios" element={<div>Usuários</div>} />
+            </Route>
           </Route>
 
-          {/* Endereço que não existe volta para o login */}
           <Route path="*" element={<Navigate to="/login" replace />} />
 
         </Routes>
-      </PerfilProvider>
-    </BrowserRouter>
+      </BrowserRouter>
+    </PerfilProvider>
   )
 }
 
