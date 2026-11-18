@@ -11,6 +11,10 @@ import { PerfilProvider, usePerfil } from './perfilcontext.jsx'
 import Sidebar from './sidebar.jsx'
 import Login from './pages/login.jsx'
 import Cadastro from './pages/cadastro.jsx'
+import DashboardAluno from './pages/dashboard-aluno.jsx'
+import DashboardInstrutor from './pages/dashboard-instrutor.jsx'
+import DashboardAdministrador from './pages/dashboard-administrador.jsx'
+import RecuperacaoSenha from './pages/recuperacao-senha.jsx'
 
 const RESTRITO = {
   '/pedidos': ['instrutor', 'administrador'],
@@ -58,13 +62,13 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/cadastro" element={<Cadastro />} />
           <Route path="/403" element={<div>403 - Acesso negado</div>} />
-          <Route path="/recuperacao-senha" element={<div>Recuperação de senha</div>} />
+          <Route path="/recuperacao-senha" element={<RecuperacaoSenha />} />
 
           <Route element={<RotaProtegida />}>
             <Route element={<Layout />}>
-              <Route path="/dashboard-aluno" element={<div>Dashboard Aluno</div>} />
-              <Route path="/dashboard-instrutor" element={<div>Dashboard Instrutor</div>} />
-              <Route path="/dashboard-administrador" element={<div>Dashboard Administrador</div>} />
+              <Route path="/dashboard-aluno" element={<DashboardAluno />} />
+              <Route path="/dashboard-instrutor" element={<DashboardInstrutor />} />
+              <Route path="/dashboard-administrador" element={<DashboardAdministrador />} />
 
               <Route path="/inventario" element={<div>Inventário</div>} />
               <Route path="/equipamentos" element={<div>Equipamentos</div>} />
