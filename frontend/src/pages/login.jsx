@@ -29,7 +29,7 @@ export default function Login() {
     }
 
     try{
-      const resposta = await fetch(import.meta.env.VITE_BACKEND_URL + '/api/login' || 'http://localhost:3000/api/login', {
+      const resposta = await fetch(import.meta.env.VITE_BACKEND_URL + '/api/login' || '/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -300,7 +300,7 @@ export default function Login() {
                   </button>
                 </div>
               </div>
-              
+
             </div>
           </div>
         </div>
