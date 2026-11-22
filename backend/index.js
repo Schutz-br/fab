@@ -2,12 +2,27 @@ const express = require('express');
 const cors = require('cors');
 const { Pool } = require('pg');
 const jwt = require('jsonwebtoken');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+require('dotenv').config();
 
 const app = express();
-app.use(cors());
+app.use(helmet());
+app.use(cors({ origin: process.env.CORS_ORIGIN || '*',}));
+
 app.use(express.json());
 
 const JWT_SECRET = process.env.JWT_SECRET || 'chave-secreta-fablab-2026';
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 100, // Limite de 100 requisições por IP
+  message: { erro: 'Muitas requisições. Tente novamente mais tarde.' }
+});
+app.use(limiter);
+
+app.get('/api/status', (req, res) => {
+  res.json({ status: 'Servidor FabLab Manager ativo', versao: '1.0.0' });
+});
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,

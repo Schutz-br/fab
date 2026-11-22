@@ -6,6 +6,10 @@ import { usePerfil } from '../perfilcontext.jsx'
 export default function Login() {
   const [perfilSelecionado, setPerfilSelecionado] = useState('aluno')
 
+  const [email, setEmail] = useState('')
+  const [senha, setSenha] = useState('')
+  const [mensagemErro, setMensagemErro] = useState('')
+
   const { entrar } = usePerfil()
   const navigate = useNavigate()
 
@@ -14,8 +18,9 @@ export default function Login() {
     navigate(`/dashboard-${perfil}`)
   }
 
-  function entrarNoSistema(ev) {
+  async function entrarNoSistema(ev) {
     ev.preventDefault()
+    setMensagemErro('')
 
     const perfis = {
       aluno: 'aluno',
@@ -23,7 +28,27 @@ export default function Login() {
       admin: 'administrador'
     }
 
-    entrarComo(perfis[perfilSelecionado])
+    try{
+      const resposta = await fetch(import.meta.env.VITE_BACKEND_URL + '/api/login' || 'http://localhost:3000/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, senha, perfil: perfis[perfilSelecionado] })
+      })
+      
+      const dados = await resposta.json()
+
+      if (resposta.ok) {
+        localStorage.setItem('token', dados.token)
+        entrarComo(perfis[perfilSelecionado])
+      } else {
+        setMensagemErro(dados.erro || 'Erro desconhecido ao tentar entrar.')
+      }
+    } catch (error) {
+      console.error('Erro ao conectar com o servidor:', error)
+      setMensagemErro('Erro de conexão com o servidor.')
+    }
   }
 
   return (
@@ -275,7 +300,7 @@ export default function Login() {
                   </button>
                 </div>
               </div>
-
+              
             </div>
           </div>
         </div>
